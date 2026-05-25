@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "../Robotics"
+		},
+		{
+			"path": "../Java Rubiks Cube"
+		},
+		{
+			"path": "../ImageToText"
+		},
+		{
+			"path": "../Dino Game"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../App Dev"
+		}
+	],
+	"settings": {}
+}
