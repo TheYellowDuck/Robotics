@@ -1,4 +1,11 @@
-# Untitled - By: gzhan - Fri May 26 2023
+"""Standalone LiDAR-alignment / movement test script.
+
+Helper routines for squaring the robot up against maze walls using the spinning
+LiDAR: estimate the heading error from the distance scan (``getAngle``), rotate to
+a target heading (``turn`` / ``fixAngle``), read which sides have walls
+(``checkWalls``), and drive one cell (``move``). Run directly, it performs a single
+forward move as a quick drive test.
+"""
 
 from pyb2 import *
 import time, math
@@ -7,7 +14,13 @@ ld = Lidar(3)
 motor = SServo(1)
 anglePrecision = 6.5
 
+
 def getAngle(ds):
+    """Estimate heading error (degrees) from a LiDAR distance scan ``ds``.
+
+    Returns the signed offset from the nearest 90-degree alignment, where the sign
+    indicates which way the robot is rotated relative to the walls.
+    """
     angle = 0.0
     count = 0
     for i in ds:
@@ -23,9 +36,15 @@ def getAngle(ds):
         return angle
     return -angle
 
+
 def turn(angle, d):
+    """Rotate in place to a target heading.
+
+    ``d`` selects the turn: 1 = right (toward +90), 2 = about-face (180),
+    3 = left (toward -90). Turn duration is derived from the current ``angle`` and
+    the empirically-tuned ``anglePrecision`` constant.
+    """
     speed = 1000
-    count = 0
     t = 0
     if d == 1:
         t = abs(round((90 - angle) * anglePrecision * anglePrecision))
@@ -39,46 +58,47 @@ def turn(angle, d):
     if d == 3:
         t = abs(round((-90 - angle) * anglePrecision * anglePrecision))
         motor.set_speeds([speed, speed, speed, speed])
-    #print(angle, t)
     time.sleep_ms(t)
     motor.set_speeds([0, 0, 0, 0])
-    #pass
 
-def fixPos(angle):
+
+def fixPos(angle, ds):
+    """Estimate the robot's offset from the cell centre on both axes.
+
+    Projects the distance scan ``ds`` onto the wall normals around ``angle`` and the
+    opposite wall (``angle + 180``), averaging over a +/-30-degree window.
+    """
     center = round(angle)
     distance1 = 0.0
     r = 30
     for i in range(center - r, center + r - 1):
-        #print(j)
-        distance1 += ds[j] * abs(math.sin(math.radians(i - angle)))
+        distance1 += ds[i] * abs(math.sin(math.radians(i - angle)))
     distance1 /= 2 * r
     distance1 %= 30
     center = round(angle + 2 * 90)
     distance2 = 0.0
     for i in range(center - r, center + r - 1):
-        #print(j)
-        distance2 += ds[j] * abs(math.sin(math.radians(i - angle)))
+        distance2 += ds[i] * abs(math.sin(math.radians(i - angle)))
     distance2 /= 2 * r
     distance2 %= 30
+    return distance1, distance2
 
 
 def fixAngle(angle):
+    """Iteratively rotate to cancel the heading error, re-reading the LiDAR.
+
+    Nudges the robot a little, re-measures the angle, and repeats until the error is
+    within ``anglePrecision`` or three corrections have been made.
+    """
     t = abs(round(angle * anglePrecision / 4))
     speed = 1000
     count = 0
     while abs(angle) > anglePrecision and count < 3:
         if angle > anglePrecision:
-            motor.set_speeds([-speed, -speed, -speed, -speed])
-            #adjust right
+            motor.set_speeds([-speed, -speed, -speed, -speed])  # adjust right
         if angle < anglePrecision:
-            #adjust left
-            motor.set_speeds([speed, speed, speed, speed])
+            motor.set_speeds([speed, speed, speed, speed])  # adjust left
         time.sleep_ms(t)
-        #t /= 2
-        #t = round(t)
-        #speed /= 2
-        #speed = round(speed)
-        #speed = round(angle * 100)
 
         dist = ld.read()
         ds = mins(dist)
@@ -87,25 +107,31 @@ def fixAngle(angle):
         t = abs(round(angle * anglePrecision / 4))
         print(angle)
         count += 1
-        #pass
     motor.set_speeds([0, 0, 0, 0])
 
+
 def checkWalls(angle, ds):
-    walls = [0,0,0,0]
+    """Return a 4-element wall bitmask from the distance scan ``ds``.
+
+    For each of the four cardinal directions (relative to ``angle``), averages the
+    projected distance over a +/-30-degree window and marks a wall when it is within
+    the 250-unit threshold.
+    """
+    walls = [0, 0, 0, 0]
     for i in range(4):
         center = round(angle + i * 90)
         distance = 0.0
         r = 30
         for j in range(center - r, center + r - 1):
-            #print(j)
             distance += ds[j] * abs(math.sin(math.radians(j - angle)))
         distance /= 2 * r
-        #print(distance)
         if distance <= 250:
             walls[(i + 1) % 4] = 1
     return walls
 
+
 def move(d):
+    """Drive one cell: ``d == 0`` forward, otherwise backward."""
     t = 3000
     speed = 2000
     if d == 0:
@@ -116,45 +142,5 @@ def move(d):
     motor.set_speeds([0, 0, 0, 0])
 
 
-
-clock = time.clock()
-
-#dist = ld.read()
-#ds = mins(dist)
-#print(ds)
-#angle = getAngle(ds)
-#print(angle)
-#turn (angle, 1)
-#dist = ld.read()
-#ds = mins(dist)
-#print(ds)
-#angle = getAngle(ds)
-#print(angle)
-#if abs(angle) > anglePrecision:
-    #fixAngle(angle)
-#walls = checkWalls(angle, dist)
-#print(walls)
-
+# Quick drive test: move one cell forward.
 move(0)
-
-#fixAngle(angle)
-#while True:
-    #clock.tick()
-    #dist = ld.read()
-    ##for i in range(360):
-        ##print(dist[i], end = ", ")
-    ##print()
-    ##print(dist.tolist())
-    ##print(dist[90])
-    #ds = mins(dist)
-    #print(ds)
-    #angle = getAngle(ds)
-    #print(angle)
-    ##getMinAngle(dist)
-    ##if abs(angle) > anglePrecision:
-        ##fixAngle(angle)
-    #walls = checkWalls(angle, dist)
-    #print(walls)
-    #print()
-    #time.sleep_ms(10)
-    #print(clock.fps())

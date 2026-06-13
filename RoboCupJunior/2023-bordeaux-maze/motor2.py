@@ -1,10 +1,17 @@
+"""Drive-motor interface for the maze robot.
+
+Wraps the four STS3215 serial bus servos (driven through ``pyb2.SServo``) behind a
+small ``Motor`` class — straight-line driving, in-place turns, odometry from servo
+position, and battery voltage — plus a few status-LED helpers. Run directly
+(``python motor2.py`` on the OpenMV device) for a quick motor self-test.
+"""
+
 from pyb2 import *
-import time, math
+import time
 from pyb import millis, LED
 
 
-# use sts3215
-# used by robot
+# Uses STS3215 serial bus servos; this is the motor interface used by the robot.
 class Motor:
     def __init__(self):
         print("create new motor")
@@ -18,45 +25,38 @@ class Motor:
 
     def stop(self):
         self.motor.set_speeds([0, 0, 0, 0])
-        return
-        while True:
-            if self.is_stopped():
-                break
-            time.sleep_ms(100)
 
     def is_stopped(self):
-        # check servo for True or false
+        # Servo reports 0 while still moving.
         r = self.motor.is_stopped()
         return r == 0
 
-    # return distance in steps
     def forward_ms(self, speed, ms):
+        """Drive forward for ``ms`` milliseconds; return distance travelled in steps."""
         t0 = millis()
         p0 = self.motor.get_position(2)
         c = 0
         last_p2 = 0
         p2 = last_p2
-        flag = 0
         self.run(speed, speed)
         while True:
             t1 = millis()
-            if t1 - t0 > ms: break
+            if t1 - t0 > ms:
+                break
             p1 = self.motor.get_position(2)
             p2 = (p1 - p0) % 4096
             if last_p2 == 0 and p2 > 4090:
                 p2 = 0
-                flag = 1
-            if p2 < 2048 and last_p2 > 2048: c += 1
+            if p2 < 2048 and last_p2 > 2048:
+                c += 1
             last_p2 = p2
-            # print('p1 p2 c', p1, p2, c)
 
         self.stop()
         s = p2 + 4096 * c
-        # print('p0 p1 c s flag,', p0, p1, c, s,flag)
         return s
 
     def forward_cm(self, speed, cm):
-        pass
+        pass  # not implemented
 
     def forward_step(self, s=None, t=3000):
         if s is None:
@@ -64,7 +64,6 @@ class Motor:
         self.motor.set_positions([-s, -s, s, s])
         time.sleep_ms(t)
         print('finished turn')
-        return
 
     def turn_right(self, s=None, t=3000):
         if s is None:
@@ -72,11 +71,6 @@ class Motor:
         self.motor.set_positions([-s, -s, -s, -s])
         time.sleep_ms(t)
         print('finished turn')
-        return
-        while True:
-            time.sleep_ms(100)
-            t = self.is_stopped()
-            if t: break
 
     def turn_left(self, s=None, t=3000):
         if s is None:
@@ -84,11 +78,6 @@ class Motor:
         self.motor.set_positions([s, s, s, s])
         time.sleep_ms(t)
         print('finished turn')
-        return
-        while True:
-            time.sleep_ms(100)
-            t = self.is_stopped()
-            if t: break
 
     def turn_back(self, s=None, t=5000):
         if s is None:
@@ -96,17 +85,15 @@ class Motor:
         self.motor.set_positions([s, s, s, s])
         time.sleep_ms(t)
         print('finished turn')
-        return
 
     def backward_ms(self, speed, ms):
-        pass
+        pass  # not implemented
 
     def backward_cm(self, speed, cm):
-        pass
+        pass  # not implemented
 
     def voltage(self):
-        v = self.motor.voltage()
-        return v
+        return self.motor.voltage()
 
 
 def drop_cube():
@@ -144,16 +131,4 @@ if __name__ == '__main__':
     print("Motor test..")
     m = Motor()
     print("\n Voltage: ", m.voltage())
-
     flash_red(3)
-    #flash_green(5)
-    #flash_blue()
-    # s = m.forward_ms(2000, 3200)  # 299.444cm
-    # print('steps : ', s, s / 4096.0 * 62 * math.pi)
-
-    # m.turn_right()
-    # m.turn_left()
-    # m.stop()
-    # print(m.is_stopped())
-
-    # print("Voltage: ", v)

@@ -1,3 +1,16 @@
+"""Final maze-navigation program for the RoboCupJunior 2023 Maze robot.
+
+Runs entirely on the OpenMV camera. Initialises the camera (QVGA, RGB565) and the
+LAB colour thresholds for the maze tiles (red / green / yellow / blue / black /
+white and letter victims), then runs the main perceive-decide-act loop: classify
+the tile under the robot from the camera, read the LiDAR to detect walls on each
+side, record each cell's walls as a 4-bit mask (forward / right / back / left), and
+drive the motors accordingly.
+
+This is the last of the iterative ``Nav`` rewrites (``Nav`` -> ``Nav6``); the
+earlier versions are kept for history.
+"""
+
 from pyb import millis, LED
 from machine import Pin
 from pyb2 import *

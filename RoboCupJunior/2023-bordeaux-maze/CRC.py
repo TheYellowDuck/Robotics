@@ -1,10 +1,9 @@
-import time
-from pyb import UART
-try:
-    import numpy as np
-except:
-    from ulab import numpy as np
-import gc
+"""Precomputed 256-entry CRC-8 lookup table.
+
+Used to checksum the UART messages exchanged with the robot's peripheral
+controller: ``crc8[b]`` gives the table contribution for byte value ``b``.
+"""
+
 crc8 = bytearray([
     0x00, 0x4d, 0x9a, 0xd7, 0x79, 0x34, 0xe3,
     0xae, 0xf2, 0xbf, 0x68, 0x25, 0x8b, 0xc6, 0x11, 0x5c, 0xa9, 0xe4, 0x33,

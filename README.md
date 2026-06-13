@@ -30,7 +30,7 @@ The navigation logic evolved through successive rewrites — `Nav` through `Nav6
 | `motor2.py` | Low-level motor driver |
 | `Stop.py` | Emergency stop routine |
 
-Test files (`TestBlack.py`, `TestColor.py`, `TestSensing.py`) were used during hardware calibration.
+The support modules (`Control.py`, `Sensor.py`, `motor2.py`, `Stop.py`, `CRC.py`) are documented helper scripts for motor control, sensing, and UART integrity. Test files (`TestBlack.py`, `TestColor.py`, `TestSensing.py`) were used during hardware calibration, and the earlier navigation drafts (`Nav` through `Nav5`) are kept to show the iterative development behind the final `Nav6.py`.
 
 ## Navigation Approach
 
