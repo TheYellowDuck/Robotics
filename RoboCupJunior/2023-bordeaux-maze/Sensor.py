@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+# Required Notice: Copyright (c) 2026 George Zhang — https://github.com/TheYellowDuck
+
 """Standalone LiDAR/ToF sensor diagnostic.
 
 Brings up the two VL53L0X time-of-flight sensors on the I2C bus (using the XSHUT

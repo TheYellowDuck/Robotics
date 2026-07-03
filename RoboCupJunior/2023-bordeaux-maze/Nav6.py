@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+# Required Notice: Copyright (c) 2026 George Zhang — https://github.com/TheYellowDuck
+
 """Final maze-navigation program for the RoboCupJunior 2023 Maze robot.
 
 Runs entirely on the OpenMV camera. Initialises the camera (QVGA, RGB565) and the

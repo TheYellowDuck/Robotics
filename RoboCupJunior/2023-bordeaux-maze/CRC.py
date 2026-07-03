@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+# Required Notice: Copyright (c) 2026 George Zhang — https://github.com/TheYellowDuck
+
 """Precomputed 256-entry CRC-8 lookup table.
 
 Used to checksum the UART messages exchanged with the robot's peripheral

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+# Required Notice: Copyright (c) 2026 George Zhang — https://github.com/TheYellowDuck
+
 Maze = [[0b1101, 0b1001, 0b1000, 0b1000, 0b1000, 0b1000, 0b1000, 0b1100],
         [0b0101, 0b0101, 0b0001, 0b0010, 0b0010, 0b0100, 0b0001, 0b0100],
         [0b0101, 0b0111, 0b0101, 0b1001, 0b1000, 0b0100, 0b0001, 0b0100],

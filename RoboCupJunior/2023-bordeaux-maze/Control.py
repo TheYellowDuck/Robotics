@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+# Required Notice: Copyright (c) 2026 George Zhang — https://github.com/TheYellowDuck
+
 """Standalone LiDAR-alignment / movement test script.
 
 Helper routines for squaring the robot up against maze walls using the spinning

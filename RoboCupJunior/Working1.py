@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+# Required Notice: Copyright (c) 2026 George Zhang — https://github.com/TheYellowDuck
+
 import time
 TestMaze = [[111011, 110011, 110001, 110001, 110001, 110001, 110001, 111001],
         [101011, 101011, 100011, 100101, 100101, 101001, 100011, 101001],
